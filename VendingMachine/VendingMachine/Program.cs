@@ -7,7 +7,9 @@ using VendingMachine.Process;
 using VendingMachine.Process.CustomException;
 using VendingMachine.Process.Drink;
 using VendingMachine.Process.Machine;
+using VendingMachine.Process.Machine.Stock;
 using VendingMachine.Process.Money;
+using VendingMachine.UI;
 
 namespace VendingMachine
 {
@@ -15,39 +17,58 @@ namespace VendingMachine
 	{
 		static void Main(string[] args)
 		{
-			IDrink drink;
-			List<IMoney> change;
+			List<IMoney> change = null;
 
 			try
 			{
-				var prepare = new PrepareStock();
-				var drinkStocker = prepare.PrepareDrink();
-				var changeStocker = prepare.PrepareChange();
+				//自販機を用意
+				var defaultFactory = new DefaultVendingStockFactory();
+				var vending = defaultFactory.Create();
 
-				var vending = new Vending(drinkStocker, changeStocker);
-
-				vending.PayMoney(new Yen500());
-				drink = vending.Select(Menu.Drink.Cola);
-				change = vending.ReturnChange();
-
-				Console.WriteLine(drink.GetPrice() + "円の" + drink.GetName() + "を購入しました。");
-				foreach(var money in change)
+				//コマンド選択
+				while(true)
 				{
-					Console.WriteLine(money.GetPrice() + "円玉が返ってきました。");
+					Console.WriteLine("現在の投入金額:" + vending.DispPayment());
+					var command = new BuyCommandRequest().Request();
+
+					switch (command)
+					{
+						case BuyCommandRequest.BuyCommandType.Pay:
+							//お金を払う
+							IMoney payment = new PaymentRequest().Request();
+							vending.PayMoney(payment);
+							break;
+
+						case BuyCommandRequest.BuyCommandType.SelectDrink:
+							//ドリンク選ぶ
+							var selectRequest = new DrinkSelectRequest(vending.GetDrinkMenu());
+							Type drinkType = selectRequest.Request();
+							var drink = vending.Select(drinkType);
+							Console.WriteLine(drink.GetName() + "を購入しました。");
+							break;
+
+						case BuyCommandRequest.BuyCommandType.ReturnChange:
+							//おつりを返す
+							change = vending.ReturnChange();
+							foreach (var money in change)
+							{
+								Console.WriteLine(money.GetPrice() + "円玉が返ってきました。");
+							}
+							Console.WriteLine("合計" + change.Sum(x => x.GetPrice()) + "円返って来ました");
+							break;
+
+						case BuyCommandRequest.BuyCommandType.Cancel:
+							//自販機で買うのをやめる
+							return;
+
+						default:
+							throw new NotSupportedException("未実装のコマンドです");
+					}
 				}
-			}
-			catch(OutOfStockException ex)
-			{
-				Console.WriteLine(ex.Message);
-			}
-			catch(OutOfChangeException ex)
-			{
-				Console.WriteLine(ex.Message);
 			}
 			catch(Exception ex)
 			{
-				Console.WriteLine("購入に失敗しました。");
-				Console.WriteLine(ex.ToString());
+				Console.WriteLine(ex.Message);
 			}
 			finally
 			{

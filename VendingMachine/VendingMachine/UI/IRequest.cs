@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VendingMachine.Process.Drink
+namespace VendingMachine.UI
 {
 	/// <summary>
-	/// 飲み物クラス
+	/// コンソールで入力要求をするクラスのインターフェース
 	/// </summary>
-	public interface IDrink 
+	public interface IRequest<T>
 	{
 		/// <summary>
-		/// 飲み物名を返す
+		/// コンソールで入力を要求し、入力値を返す
 		/// </summary>
 		/// <returns></returns>
-		string GetName();
+		T Request();
 	}
 }

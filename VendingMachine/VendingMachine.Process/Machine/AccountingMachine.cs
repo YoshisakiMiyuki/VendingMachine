@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VendingMachine.Process.CustomException;
 using VendingMachine.Process.Drink;
+using VendingMachine.Process.Machine.Stock;
 using VendingMachine.Process.Money;
 
 namespace VendingMachine.Process.Machine
@@ -19,14 +21,14 @@ namespace VendingMachine.Process.Machine
 		private int _payment;
 
 		//釣銭をストックするクラス
-		private ChangeStocker _changeStocker = null;
+		private ChangeStockerContainer _changeStockerContainer = null;
 
 		/// <summary>
 		/// コンストラクタ
 		/// </summary>
-		public AccountingMachine(ChangeStocker changeStocker)
+		public AccountingMachine(ChangeStockerContainer changeStocker)
 		{
-			this._changeStocker = changeStocker;
+			this._changeStockerContainer = changeStocker;
 		}
 
 		/// <summary>
@@ -35,25 +37,22 @@ namespace VendingMachine.Process.Machine
 		/// <param name="money"></param>
 		public void KeepPayment(IMoney money)
 		{
-			this._changeStocker.Add(money);
+			this._changeStockerContainer.Supplement(money);
 			this._payment += money.GetPrice();
 		}
 
 		/// <summary>
 		/// 購入処理
 		/// </summary>
-		public bool Buy(IDrink drink)
+		public void Buy(int price)
 		{
-			int price = drink.GetPrice();
-
-			//投入金額が商品金額より小さいなら、会計をしない
+			//投入金額が商品金額より小さい場合、代金不足エラーを発生させる
 			if(this._payment < price)
 			{
-				return false;
+				throw new ShortPaidException();
 			}
 
-			this._payment -= drink.GetPrice();
-			return true;
+			this._payment -= price;
 		}
 
 		/// <summary>
@@ -62,7 +61,7 @@ namespace VendingMachine.Process.Machine
 		/// <returns></returns>
 		public List<IMoney> ReturnChange()
 		{
-			var calculator = new ChangeCalculator(this._changeStocker);
+			var calculator = new ChangeCalculator(this._changeStockerContainer);
 			var change = calculator.ReturnChange(this._payment);
 			CleatPayment();
 			return change;
@@ -74,6 +73,15 @@ namespace VendingMachine.Process.Machine
 		private void CleatPayment()
 		{
 			this._payment = 0;
+		}
+
+		/// <summary>
+		/// 現在の代金を表示
+		/// </summary>
+		/// <returns></returns>
+		public int DispPayment()
+		{
+			return this._payment;
 		}
 	}
 }

@@ -43,24 +43,41 @@
   <ItemGroup>
     <Compile Include="CustomException\OutOfChangeException.cs" />
     <Compile Include="CustomException\OutOfStockException.cs" />
+    <Compile Include="CustomException\ShortPaidException.cs" />
     <Compile Include="Drink\Cola.cs" />
-    <Compile Include="Drink\Menu.cs" />
-    <Compile Include="Machine\DrinkStocker.cs" />
+    <Compile Include="Machine\StockerContainerBase.cs" />
+    <Compile Include="Machine\Stock\Change\ChangeStockerContainer.cs" />
+    <Compile Include="Machine\Stock\Change\ChangeStockerFactory.cs" />
+    <Compile Include="Machine\Stock\Change\DefaultChangeStockFactory.cs" />
+    <Compile Include="Machine\Stock\Drink\DefaultDrinkStockFactory.cs" />
+    <Compile Include="Machine\Stock\Drink\DrinkStockerContainer.cs" />
+    <Compile Include="Machine\Stock\Drink\DrinkStockerFactory.cs" />
+    <Compile Include="Machine\Stock\Drink\DrinkStocker.cs" />
     <Compile Include="Drink\IceTea.cs" />
     <Compile Include="Machine\AccountingMachine.cs" />
     <Compile Include="Machine\ChangeCalculator.cs" />
-    <Compile Include="Machine\ChangeStocker.cs" />
+    <Compile Include="Machine\Stock\Change\ChangeStocker.cs" />
+    <Compile Include="Machine\Stock\Change\IDefaultChangeStockFactory.cs" />
+    <Compile Include="Machine\Stock\Drink\IDefaultDrinkStockFactory.cs" />
+    <Compile Include="Machine\Stock\IStockerContainer.cs" />
+    <Compile Include="Machine\Stock\Drink\IDrinkStockerContainer.cs" />
+    <Compile Include="Machine\Stock\Drink\IDrinkStockerFactory.cs" />
+    <Compile Include="Machine\Stock\Change\IChangeStockerFactory.cs" />
+    <Compile Include="Machine\Stock\IStocker.cs" />
+    <Compile Include="Machine\Stock\StockerBase.cs" />
+    <Compile Include="Money\MoneyConvertor.cs" />
     <Compile Include="Money\Yen10.cs" />
     <Compile Include="Money\Yen100.cs" />
     <Compile Include="Money\IBill.cs" />
     <Compile Include="Money\ICoin.cs" />
     <Compile Include="Drink\IDrink.cs" />
     <Compile Include="Money\IMoney.cs" />
+    <Compile Include="Money\Yen1000.cs" />
     <Compile Include="Money\Yen50.cs" />
     <Compile Include="Money\Yen500.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Machine\Vending.cs" />
-    <Compile Include="PrepareStock.cs" />
+    <Compile Include="Machine\Stock\DefaultVendingStockFactory.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

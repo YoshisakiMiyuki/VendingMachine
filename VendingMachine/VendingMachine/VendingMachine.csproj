@@ -48,6 +48,11 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\BuyCommandRequest.cs" />
+    <Compile Include="UI\DrinkSelectRequest.cs" />
+    <Compile Include="UI\IRequest.cs" />
+    <Compile Include="UI\PaymentRequest.cs" />
+    <Compile Include="UI\RequestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -58,5 +63,6 @@
       <Name>VendingMachine.Process</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

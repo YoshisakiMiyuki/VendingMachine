@@ -4,21 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VendingMachine.Process.Drink
+namespace VendingMachine.Process.Money
 {
 	/// <summary>
-	/// メニュークラス
+	/// 1000円札クラス
 	/// </summary>
-	public class Menu
+	public class Yen1000 : IBill
 	{
 		/// <summary>
-		/// ドリンクのメニュー
+		/// 金額を返す
 		/// </summary>
-		public enum Drink
+		/// <returns></returns>
+		public int GetPrice()
 		{
-			Cola
-			, IceTea
+			return 1000;
 		}
-
 	}
 }

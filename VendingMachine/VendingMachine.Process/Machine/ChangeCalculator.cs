@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VendingMachine.Process.CustomException;
+using VendingMachine.Process.Machine.Stock;
 using VendingMachine.Process.Money;
 
 namespace VendingMachine.Process.Machine
@@ -14,15 +15,15 @@ namespace VendingMachine.Process.Machine
 	public class ChangeCalculator
 	{
 		//釣銭をストックするクラス
-		private ChangeStocker _moneyStocker = null;
+		private ChangeStockerContainer _moneyStockerContainer = null;
 
 		/// <summary>
 		/// コンストラクタ
 		/// </summary>
 		/// <param name="moneyStocker"></param>
-		public ChangeCalculator(ChangeStocker moneyStocker)
+		public ChangeCalculator(ChangeStockerContainer moneyStocker)
 		{
-			this._moneyStocker = moneyStocker;
+			this._moneyStockerContainer = moneyStocker;
 		}
 
 		/// <summary>
@@ -54,12 +55,12 @@ namespace VendingMachine.Process.Machine
 		/// <typeparam name="MoneyType"></typeparam>
 		/// <param name="payment"></param>
 		/// <returns></returns>
-		private List<MoneyType> PullMoney<MoneyType>(ref int payment)
+		private List<IMoney> PullMoney<MoneyType>(ref int payment)
 			where MoneyType : IMoney, new()
 		{
 			//おつりをストックから出す
 			int count = CalcMoneyCount<MoneyType>(payment);
-			var moneies = _moneyStocker.PutOutMoney<MoneyType>(count);
+			var moneies = _moneyStockerContainer.Put(typeof(MoneyType), count);
 
 			//代金から出した分を差し引く
 			payment -= moneies.Sum(x => x.GetPrice());

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VendingMachine.Process.CustomException;
 using VendingMachine.Process.Drink;
+using VendingMachine.Process.Machine.Stock;
 using VendingMachine.Process.Money;
 
 namespace VendingMachine.Process.Machine
@@ -14,7 +16,7 @@ namespace VendingMachine.Process.Machine
 	public class Vending
 	{
 		//ドリンクストッククラス
-		private DrinkStocker _drinkStocker = null;
+		private DrinkStockerContainer _drinkStockerContainer = null;
 
 		//会計クラス
 		private AccountingMachine _accountingMachine = null;
@@ -22,10 +24,10 @@ namespace VendingMachine.Process.Machine
 		/// <summary>
 		/// コンストラクタ
 		/// </summary>
-		public Vending(DrinkStocker drinkStocker,  ChangeStocker changeStocker)
+		public Vending(DrinkStockerContainer drinkStockerContainer,  ChangeStockerContainer changeStockerContainer)
 		{
-			this._drinkStocker = drinkStocker;
-			this._accountingMachine = new AccountingMachine(changeStocker);
+			this._drinkStockerContainer = drinkStockerContainer;
+			this._accountingMachine = new AccountingMachine(changeStockerContainer);
 		}
 
 		/// <summary>
@@ -41,10 +43,14 @@ namespace VendingMachine.Process.Machine
 		/// ドリンクを選択する
 		/// </summary>
 		/// <returns></returns>
-		public IDrink Select(Menu.Drink selected)
+		public IDrink Select(Type drinkType)
 		{
-			var drink = this._drinkStocker.PutOutDrink(selected);
-			_accountingMachine.Buy(drink);
+			//計算処理
+			int price = this._drinkStockerContainer.GetDrinkPrice(drinkType);
+			_accountingMachine.Buy(price);
+
+			//ストックからドリンクを出す
+			var drink = this._drinkStockerContainer.Put(drinkType);
 
 			return drink;
 		}
@@ -56,6 +62,24 @@ namespace VendingMachine.Process.Machine
 		public List<IMoney> ReturnChange()
 		{
 			return _accountingMachine.ReturnChange();
+		}
+
+		/// <summary>
+		/// ドリンクメニューを取得
+		/// </summary>
+		/// <returns></returns>
+		public List<Type> GetDrinkMenu()
+		{
+			return _drinkStockerContainer.GetStockDrinkLsit();
+		}
+
+		/// <summary>
+		/// 現在の代金を表示
+		/// </summary>
+		/// <returns></returns>
+		public int DispPayment()
+		{
+			return _accountingMachine.DispPayment();
 		}
 	}
 }
